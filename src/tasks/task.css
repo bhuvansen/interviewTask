@@ -1,0 +1,11 @@
+.action{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.filter{
+    display: inline-grid;
+}
+input { 
+    text-align: center; 
+}
