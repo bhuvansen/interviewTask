@@ -4,6 +4,7 @@ import { dummyEmpDetails } from "./sampleValue"
 import Button from "react-bootstrap/Button"
 import "./task.css"
 import * as _ from "lodash"
+
 class Task extends React.Component {
   constructor() {
     super()
@@ -22,33 +23,43 @@ class Task extends React.Component {
       filteredDepartment:""
     }
   }
+
   componentDidMount() {
     this.setState({ empDetails: _.cloneDeep(dummyEmpDetails) })
     this.setState({ empdummyEmpDetailsBackup:  _.cloneDeep(dummyEmpDetails) })
   }
+
   edit(key) {
     let empArray = [...this.state.empDetails]
     empArray[key - 1].editMode = true
     this.setState({ editMode: true, empDetails: empArray })
   }
+
   handleChange(event, type, key) {
     let empArray = [...this.state.empDetails]
     empArray[key][type] = event.target.value
     this.setState({ empDetails: empArray })
   }
+
   update(key) {
     let empArray = [...this.state.empDetails]
     empArray[key - 1].editMode = false
     this.setState({ empDetails: empArray })
     this.setState({ empdummyEmpDetailsBackup: _.cloneDeep(empArray) })
   }
+
+
   delete(key) {
     let empArray = [...this.state.empDetails].filter((item) => item.id !== key)
-    this.setState({ empDetails: empArray })
+    for(let i in empArray){
+      empArray[i].id = empArray[i].id-1
+    }
+    this.setState({ empDetails: empArray , empdummyEmpDetailsBackup:_.cloneDeep(empArray) })
     if(this.state.filterMode){
       this.setState({ empDetailsFilter: empArray.filter((item) => item.employee_dept === this.state.filteredDepartment)})
     }
   }
+
   loadTable(dept) {
     this.setState({filteredDepartment:dept})
     if (dept !== "all") {
@@ -57,6 +68,7 @@ class Task extends React.Component {
       this.setState({ empDetailsFilter: this.state.empDetails, filerMode:false })
     }
   }
+
   loadSalary(SalaryType) {
     if (SalaryType === "lowest") {
       this.setState({ lowestSalary: true })
@@ -64,9 +76,11 @@ class Task extends React.Component {
       this.setState({ highestSalary: true })
     }
   }
+
   addNewDetail() {
     this.setState({ addNew: true })
   }
+
   add(){
     let newEmp = {
       id: this.state.newId,
@@ -80,6 +94,7 @@ class Task extends React.Component {
       this.setState({empDetailsFilter:[...this.state.empDetailsFilter, newEmp]})
     }
   }
+
   handleNewEmp(event, detailType, key){ 
     if(detailType==="name"){
       this.setState({newName: event.target.value})
@@ -90,16 +105,18 @@ class Task extends React.Component {
     }
     this.setState({newId: key+1})
   }
+
   cancelNew(){
     this.setState({ addNew: false,  newDept:"", newEmp:"", newName:"", newSalary:"", newId:""})
   }
+
   cancel(){
-    console.log("dummyEmpDetails", this.state.empdummyEmpDetailsBackup)
     this.setState({empDetails: _.cloneDeep(this.state.empdummyEmpDetailsBackup) })
     if(this.state.filterMode){
       this.setState({empDetailsFilter:_.cloneDeep(this.state.empdummyEmpDetailsBackup).filter((item)=>item.employee_dept===this.state.filteredDepartment)})
     }
   }
+
   render() {
     const { empDetails, highestSalary, lowestSalary, addNew, filterMode , empDetailsFilter} = this.state
     let tableDetail = filterMode? empDetailsFilter : empDetails
@@ -107,7 +124,7 @@ class Task extends React.Component {
     salaryArray = tableDetail.map((item) => {
       return item.employee_salary
     })
-    console.log("salaryArray", salaryArray)
+
     return (
       <div>
         <Table striped bordered hover>
